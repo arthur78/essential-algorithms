@@ -2,6 +2,7 @@
 
 http://eu.wiley.com/WileyCDA/WileyTitle/productCd-1118612108.html
 
-Python packages correspond to the book's chapters.
+My test implementations of algorithms discussed in this book, in Python 
+language. Package names correspond to the book's chapters.
 
-Python version: 2.7.6
+Python version: 3.6.0
