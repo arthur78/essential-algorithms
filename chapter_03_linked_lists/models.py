@@ -9,6 +9,10 @@ class Cell(object):
         if is_doubly_linked:
             self.prev = None
 
+    @property
+    def is_doubly_linked(self):
+        return 'prev' in self.__dict__
+
     def __str__(self):
         return "{}".format(self.value)
 
