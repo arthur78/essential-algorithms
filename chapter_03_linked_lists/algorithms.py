@@ -1,4 +1,49 @@
-from .models import Cell, TopSentinel, BottomSentinel
+from .models import Cell, TopSentinel, BottomSentinel, Sentinel
+
+
+def delete_cell(after_me):
+    """Delete the cell after the given cell.
+
+    The deleted (unlinked) cell will be garbage-collected.
+
+    This algorithm takes only a few steps, so it runs in O(1) time.
+
+    :param after_me: The cell after which insert the new cell.
+    :type: Cell
+    """
+    assert after_me.next and not isinstance(after_me.next, BottomSentinel)
+    assert not isinstance(after_me, BottomSentinel)
+
+    is_doubly_linked = after_me.is_doubly_linked
+
+    if after_me.next.next:
+        after_me.next = after_me.next.next
+        if is_doubly_linked:
+            after_me.next.prev = after_me
+    else:
+        after_me.next = None
+
+
+def insert_cell(after_me, new_cell):
+    """Insert a new cell after the cell.
+
+    This algorithm takes only a few steps, so it runs in O(1) time.
+
+    :param after_me: The cell after which insert the new cell.
+    :type: Cell
+    :param new_cell: The new cell to insert.
+    :type: Cell
+    """
+    assert not isinstance(new_cell, Sentinel)
+    is_doubly_linked = after_me.is_doubly_linked
+    if is_doubly_linked:
+        assert new_cell.is_doubly_linked
+
+    new_cell.next = after_me.next
+    if is_doubly_linked:
+        new_cell.prev = after_me
+        new_cell.next.prev = new_cell
+    after_me.next = new_cell
 
 
 def add_at_end(top_cell, new_cell):
@@ -41,6 +86,7 @@ def add_at_end(top_cell, new_cell):
 
     return top_cell
 
+
 def add_at_beginning(top_cell, new_cell):
     """Add a new cell at the beginning of a linked list, represented by its
     top cell.
@@ -78,6 +124,8 @@ def iterate(top_cell):
     if isinstance(top_cell, TopSentinel):
         use_sentinel = True
         current_cell = top_cell.next
+        if not current_cell:  # Empty list.
+            return
     else:
         use_sentinel = False
         current_cell = top_cell
@@ -96,6 +144,11 @@ def make_list(values, use_sentinel=True, is_doubly_linked=False):
     """A helper to create a linked list based on the given values.
 
     :param values: An iterable of cell values.
+
+    :param is_doubly_linked: Doubly linked lists allow for more efficient list
+        manipulation. For example, they let addition and removal of cells at
+        the list's end in O(1) time.
+
     :return: A top cell of the created list.
     :rtype: Cell | TopSentinel
     """

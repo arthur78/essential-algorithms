@@ -1,6 +1,7 @@
 import unittest
 from .models import Cell, Sentinel, TopSentinel, BottomSentinel
-from .algorithms import make_list, iterate, add_at_beginning, add_at_end
+from .algorithms import make_list, iterate, add_at_beginning, add_at_end, \
+    insert_cell, delete_cell
 
 
 class LinkedListTest(unittest.TestCase):
@@ -128,3 +129,54 @@ class LinkedListTest(unittest.TestCase):
         _list = make_list(values, use_sentinel=False)
         new_cell = Cell('c')
         self.assertRaises(AssertionError, add_at_end, _list, new_cell)
+
+    def test_insert_cell(self):
+        values = [1, 2, 3]
+        _list = make_list(values, use_sentinel=True)
+        new_cell = Cell('a')
+
+        none_value = insert_cell(_list.next, new_cell)
+        self.assertIsNone(none_value)
+        self.assertListValues(_list, [1, 'a', 2, 3])
+
+        insert_cell(_list.next.next, Cell('b'))
+        self.assertListValues(_list, [1, 'a', 'b', 2, 3])
+
+        _list = make_list(values, use_sentinel=True, is_doubly_linked=True)
+        new_cell = Cell('d', is_doubly_linked=True)
+
+        none_value = insert_cell(_list.next.next, new_cell)
+        self.assertIsNone(none_value)
+        self.assertListValues(_list, [1, 2, 'd', 3])
+
+    def test_delete_cell(self):
+        values = [1, 2, 3]
+        _list = make_list(values, use_sentinel=True)
+
+        none_value = delete_cell(_list.next)
+        self.assertIsNone(none_value)
+        self.assertListValues(_list, [1, 3])
+
+        self.assertRaises(AssertionError, delete_cell, _list.next.next)
+
+        delete_cell(_list)
+        self.assertListValues(_list, [3])
+
+        delete_cell(_list)
+        self.assertListValues(_list, [])
+
+        _list = make_list(values, use_sentinel=True, is_doubly_linked=True)
+        none_value = delete_cell(_list.next.next)
+        self.assertIsNone(none_value)
+        self.assertListValues(_list, [1, 2])
+
+        self.assertRaises(AssertionError, delete_cell, _list.next.next)
+
+        delete_cell(_list)
+        self.assertListValues(_list, [2])
+
+        delete_cell(_list)
+        self.assertListValues(_list, [])
+
+        self.assertRaises(AssertionError, delete_cell, _list)
+        self.assertRaises(AssertionError, delete_cell, _list.next)

@@ -6,6 +6,7 @@ class Cell(object):
     def __init__(self, value=None, is_doubly_linked=False):
         self.value = value
         self.next = None
+
         if is_doubly_linked:
             self.prev = None
 
