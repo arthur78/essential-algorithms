@@ -4,6 +4,15 @@ from .models import Cell, TopSentinel, BottomSentinel, Sentinel
 def insert_into_sorted(top_cell, new_cell):
     """Insert a new cell into the sorted list.
 
+    In the worst case this algorithm will need to cross the whole list to find
+    the right position to insert the new cell, so if the list holds N cells,
+    its runtime is O(N).
+
+    This algorithm's theoretical runtime cannot be improved, however it can
+    be simplified and made faster in case the list is having the bottom
+    sentinel whose value is larger than any possible value that could be
+    stored in a cell.
+
     :param top_cell: The list's first cell.
     :type top_cell: TopSentinel
     :param new_cell: The new cell to insert so the list remains sorted.
