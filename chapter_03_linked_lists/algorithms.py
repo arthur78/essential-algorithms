@@ -1,6 +1,34 @@
 from .models import Cell, TopSentinel, BottomSentinel, Sentinel
 
 
+def insert_into_sorted(top_cell, new_cell):
+    """Insert a new cell into the sorted list.
+
+    :param top_cell: The list's first cell.
+    :type top_cell: TopSentinel
+    :param new_cell: The new cell to insert so the list remains sorted.
+    :type new_cell: Cell
+    :rtype: TopSentinel
+    """
+    assert isinstance(top_cell, TopSentinel)
+    is_doubly_linked = top_cell.is_doubly_linked
+    if is_doubly_linked:
+        assert new_cell.is_doubly_linked
+
+    def is_last_cell(cell):
+        return isinstance(cell.next, BottomSentinel) or not cell.next
+
+    after_me = top_cell
+    while not is_last_cell(after_me) and after_me.next < new_cell:
+        after_me = after_me.next
+
+    new_cell.next = after_me.next
+    after_me.next = new_cell
+    if is_doubly_linked:
+        new_cell.prev = after_me
+        new_cell.next.prev = new_cell
+
+
 def delete_cell(after_me):
     """Delete the cell after the given cell.
 
@@ -40,10 +68,10 @@ def insert_cell(after_me, new_cell):
         assert new_cell.is_doubly_linked
 
     new_cell.next = after_me.next
+    after_me.next = new_cell
     if is_doubly_linked:
         new_cell.prev = after_me
         new_cell.next.prev = new_cell
-    after_me.next = new_cell
 
 
 def add_at_end(top_cell, new_cell):
@@ -66,13 +94,11 @@ def add_at_end(top_cell, new_cell):
     if is_doubly_linked:
         assert new_cell.is_doubly_linked
 
-    # Find the last cell of the list.
-    if is_doubly_linked:
-        is_not_last_cell = lambda cell: not isinstance(cell, BottomSentinel)
-    else:
-        is_not_last_cell = lambda cell: cell.next
+    def is_last(cell):
+        return isinstance(cell, BottomSentinel) or not cell.next
+
     last_cell = top_cell
-    while is_not_last_cell(last_cell):
+    while not is_last(last_cell):
         last_cell = last_cell.next
 
     # Got the last cell. Now adjust the cell links.
@@ -130,12 +156,10 @@ def iterate(top_cell):
         use_sentinel = False
         current_cell = top_cell
 
-    if use_sentinel and current_cell.is_doubly_linked:
-        is_not_last_cell = lambda cell: not isinstance(cell, BottomSentinel)
-    else:
-        is_not_last_cell = lambda cell: cell
+    def is_last(cell):
+        return (use_sentinel and isinstance(cell, BottomSentinel)) or not cell
 
-    while is_not_last_cell(current_cell):
+    while not is_last(current_cell):
         yield current_cell
         current_cell = current_cell.next
 

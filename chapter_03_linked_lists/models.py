@@ -14,6 +14,9 @@ class Cell(object):
     def is_doubly_linked(self):
         return 'prev' in self.__dict__
 
+    def __lt__(self, other):
+        return self.value < other.value
+
     def __str__(self):
         return "{}".format(self.value)
 
