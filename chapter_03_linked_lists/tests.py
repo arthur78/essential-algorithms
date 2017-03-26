@@ -272,3 +272,6 @@ class LinkedListTest(unittest.TestCase):
         self.assertTrue(isinstance(new_top_cell, TopSentinel))
         self.assertIsNot(top_cell, new_top_cell)
         self.assertListValues(new_top_cell, values)
+        self.assertTrue(
+            isinstance(new_top_cell.bottom_sentinel, BottomSentinel))
+        self.assertEqual(new_top_cell.bottom_sentinel.prev.value, 3)

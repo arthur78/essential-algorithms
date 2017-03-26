@@ -28,6 +28,7 @@ def copy_list(top_cell):
     if is_doubly_linked:
         last_added.next = BottomSentinel()
         last_added.next.prev = last_added
+        new_top_cell.bottom_sentinel = last_added.next
 
     return new_top_cell
 
