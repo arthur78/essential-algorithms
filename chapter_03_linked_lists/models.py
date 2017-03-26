@@ -1,4 +1,3 @@
-import sys
 
 
 class Cell(object):
@@ -28,20 +27,25 @@ class Sentinel(Cell):
         contain any meaningful data. It is used only as a placeholder so that
         algorithms can refer to a cell that comes before the first cell.
 
-        - A sentinel may seem like a waste of space, but it removes the need
+        - A sentinel may seem like a waste of space, but it removes the need of
         special-purpose code and makes the algorithm simpler and more elegant.
     """
 
     def __init__(self, is_doubly_linked=False):
-        super(Sentinel, self).__init__(None, is_doubly_linked)
+        super().__init__(None, is_doubly_linked)
 
 
 class TopSentinel(Sentinel):
-    pass
+
+    def __init__(self, is_doubly_linked=False):
+        if is_doubly_linked:
+            self.bottom_sentinel = None
+        super().__init__(is_doubly_linked)
+
 
 
 class BottomSentinel(Sentinel):
 
     def __init__(self):
         # Assume a bottom sentinel always implies doubly linked lists.
-        super(BottomSentinel, self).__init__(is_doubly_linked=True)
+        super().__init__(is_doubly_linked=True)

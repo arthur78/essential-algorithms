@@ -1,6 +1,37 @@
 from .models import Cell, TopSentinel, BottomSentinel, Sentinel
 
 
+def copy_list(top_cell):
+    """Return a copy of the list.
+    
+    :param top_cell: The list's first cell.
+    :type top_cell: TopSentinel
+    :rtype: TopSentinel
+    """
+    assert isinstance(top_cell, TopSentinel)
+    is_doubly_linked = top_cell.is_doubly_linked
+    new_top_cell = TopSentinel(is_doubly_linked=is_doubly_linked)
+
+    last_added = new_top_cell
+    old_cell = top_cell.next
+
+    def is_last_cell(cell):
+        return isinstance(cell, BottomSentinel) or not cell
+
+    while not is_last_cell(old_cell):
+        last_added.next = Cell(old_cell.value, is_doubly_linked)
+        if is_doubly_linked:
+            last_added.next.prev = last_added
+        last_added = last_added.next
+        old_cell = old_cell.next
+
+    if is_doubly_linked:
+        last_added.next = BottomSentinel()
+        last_added.next.prev = last_added
+
+    return new_top_cell
+
+
 def insert_into_sorted(top_cell, new_cell):
     """Insert a new cell into the sorted list.
 
@@ -150,6 +181,73 @@ def add_at_beginning(top_cell, new_cell):
     return top_cell
 
 
+def find_cell_before__sentinel(top_cell, value):
+    """Find the cell before the cell containing the target value.
+    
+    According to the book, it's often easiest to work with a cell in a 
+    linked list if you have a pointer to the cell before that cell.
+    
+    This algorithm assumes the given list uses a sentinel.
+    
+    Unlike lists not using sentinels, lists using sentinels are capable to 
+    return the `before` cell in case the target value is the value of the first
+    list cell (assume cell values are unique), and also eliminate the need of 
+    special-purpose code - the check that the `top_cell` is defined.
+    
+    Worst-case performance is O(N).
+    """
+    assert isinstance(top_cell, Sentinel)
+    cell_before = top_cell
+    while cell_before.next:
+        if cell_before.next.value == value:
+            return cell_before
+        cell_before = cell_before.next
+
+
+def find_cell_before__no_sentinel(top_cell, value):
+    """Find the cell before the cell containing the target value.
+    
+    According to the book, it's often easiest to work with a cell in a 
+    linked list if you have a pointer to the cell before that cell.
+    
+    This algorithm assumes the given list doesn't use a sentinel.
+    
+    In two cases this algorithm will fail:
+        - In case the `top_cell` is undefined, as the code is getting the next 
+        cell as the condition for `while`.
+        
+        - Return nothing in case the target value is the value of the top 
+        cell (assume cell values are unique), because there's no cell before 
+        that one.
+        
+    Worst-case performance is O(N).
+    """
+    assert not isinstance(top_cell, Sentinel)
+    if not top_cell:  # Need this, otherwise can then fail with AttributeError.
+        return
+    cell_before = top_cell
+    while cell_before.next:
+        if cell_before.next.value == value:
+            return cell_before
+        cell_before = cell_before.next
+
+
+def find_cell(top_cell, value):
+    """Look through a list and return the cell containing the target value.
+    
+    Worst-case performance is O(N).
+    
+    :type top_cell: Cell
+    :param value: The value of the target cell.
+    :rtype: Cell
+    """
+    current_cell = top_cell
+    while current_cell:
+        if current_cell.value == value:
+            return current_cell
+        current_cell = current_cell.next
+
+
 def iterate(top_cell):
     """Iterate over the linked list represented by its top cell.
 
@@ -177,11 +275,8 @@ def make_list(values, use_sentinel=True, is_doubly_linked=False):
     """A helper to create a linked list based on the given values.
 
     :param values: An iterable of cell values.
-
-    :param is_doubly_linked: Doubly linked lists allow for more efficient list
-        manipulation. For example, they let addition and removal of cells at
-        the list's end in O(1) time.
-
+    :type use_sentinel: bool
+    :type is_doubly_linked: bool
     :return: A top cell of the created list.
     :rtype: Cell | TopSentinel
     """
@@ -208,5 +303,6 @@ def make_list(values, use_sentinel=True, is_doubly_linked=False):
         bottom_cell = BottomSentinel()
         bottom_cell.prev = current_cell
         current_cell.next = bottom_cell
+        top_cell.bottom_sentinel = bottom_cell
 
     return top_cell
