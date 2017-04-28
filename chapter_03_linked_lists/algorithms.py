@@ -1,6 +1,43 @@
 from .models import Cell, TopSentinel, BottomSentinel, Sentinel
 
 
+def insertion_sort(top_cell):
+    """Sort the given list using the `insertionsort` algorithm.
+    
+    The basic idea is to take an item from the input list and insert it into 
+    the proper position in a sorted output list, which initially starts empty.
+    
+    In case the input list is already sorted in largest-to-smallest order, 
+    then this algorithm inserts each item at the beginning of the new list 
+    in the fixed number of steps, so in this case we have O(N). That's the 
+    best case.
+    
+    In case the input list is already sorted in smallest-to-largest order, 
+    then this algorithm must insert each item at the end of the new list, 
+    finding of which will require +1 step for each next item. So, inserting 
+    all the items take 1+2+...+N = O(N^2) steps. That's the worst case.
+    
+    The input list gets broken, unless it's sorted in smallest-to-greatest
+    order. Seems we could avoid this by instantiating new cells for the 
+    sorted list, instead of managing the links on the items of the input 
+    list, but this will double the memory size.
+    """
+    assert isinstance(top_cell, TopSentinel)
+    assert not top_cell.is_doubly_linked  # TODO: Possible to support?
+    sorted_top_cell = TopSentinel()
+
+    input_cell = top_cell.next
+    while input_cell:
+        next_cell = input_cell  # Next cell to add to the list.
+        input_cell = input_cell.next  # Move for the next loop trip.
+        after_me = sorted_top_cell
+        while after_me.next and after_me.next < next_cell:
+            after_me = after_me.next
+        next_cell.next = after_me.next  # Insert the item in the sorted list.
+        after_me.next = next_cell
+    return sorted_top_cell
+
+
 def copy_list(top_cell):
     """Return a copy of the list.
     

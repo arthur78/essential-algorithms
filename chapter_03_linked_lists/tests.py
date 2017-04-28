@@ -2,7 +2,7 @@ import unittest
 from .models import Cell, Sentinel, TopSentinel, BottomSentinel
 from .algorithms import make_list, iterate, add_at_beginning, add_at_end, \
     insert_cell, delete_cell, insert_into_sorted, copy_list, find_cell, \
-    find_cell_before__no_sentinel, find_cell_before__sentinel
+    find_cell_before__no_sentinel, find_cell_before__sentinel, insertion_sort
 
 
 class LinkedListTest(unittest.TestCase):
@@ -275,3 +275,22 @@ class LinkedListTest(unittest.TestCase):
         self.assertTrue(
             isinstance(new_top_cell.bottom_sentinel, BottomSentinel))
         self.assertEqual(new_top_cell.bottom_sentinel.prev.value, 3)
+
+    def test_insertion_sort(self):
+        values = [12, 2, 8, 6, 1, 3]
+        top_cell = make_list(values)
+        sorted_top_cell = insertion_sort(top_cell)
+        self.assertListValues(sorted_top_cell, sorted(values))
+        self.assertListValues(top_cell, values[0:1])  # Broken.
+
+        values = [1, 2, 3, 4, 5, 6]
+        top_cell = make_list(values)
+        sorted_top_cell = insertion_sort(top_cell)
+        self.assertListValues(sorted_top_cell, sorted(values))
+        self.assertListValues(top_cell, values)  # Intact.
+
+        values = [6, 5, 4, 3, 2, 1]
+        top_cell = make_list(values)
+        sorted_top_cell = insertion_sort(top_cell)
+        self.assertListValues(sorted_top_cell, sorted(values))
+        self.assertListValues(top_cell, values[0:1])  # Broken.
